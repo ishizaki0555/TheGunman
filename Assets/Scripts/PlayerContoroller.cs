@@ -47,6 +47,27 @@ public class PlayerContoroller : MonoBehaviour
 
     private void Update()
     {
+        PlayerMove(); // プレイヤーの移動
+    }
+
+    /*
+    private void CameraWork()
+    {
+        // カメラの方向から、X-Z平面の単位ベクトルを取得
+        Vector3 cameraForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized;
+
+        // 移動方向の入力値とカメラの向きから、移動方向を決定
+        Vector3 moveForward = cameraForward * _inputMove.x + Camera.main.transform.right * _inputMove.y;
+
+        // プレイヤーの向きを、移動方向に合わせる
+        if(moveForward != Vector3.zero)
+        {
+            transform.rotation = Quaternion.LookRotation(moveForward);
+        }
+    }
+
+    private void PlayerMove()
+    {
         var isGrounded = _characterController.isGrounded;
 
         if (isGrounded && !_isGroundedPrev)
@@ -97,5 +118,45 @@ public class PlayerContoroller : MonoBehaviour
             // オブジェクトの回転を更新
             _transform.rotation = Quaternion.Euler(0, angleY, 0);
         }
+    }*/
+
+    private void PlayerMove()
+    {
+        var isGrounded = _characterController.isGrounded;
+
+        if (isGrounded && !_isGroundedPrev)
+        {
+            _verticalVelocity = -_initFallSpeed;
+        }
+        else if (!isGrounded)
+        {
+            _verticalVelocity -= _gravity * Time.deltaTime;
+            if (_verticalVelocity < -_fallSpeed)
+                _verticalVelocity = -_fallSpeed;
+        }
+
+        _isGroundedPrev = isGrounded;
+
+        // カメラの向きに合わせて移動方向を変換
+        Vector3 cameraForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized;
+        Vector3 cameraRight = Camera.main.transform.right;
+
+        Vector3 moveDirection = cameraForward * _inputMove.y + cameraRight * _inputMove.x;
+        moveDirection.Normalize();
+
+        // 移動速度を適用
+        Vector3 moveVelocity = moveDirection * _speed;
+        moveVelocity.y = _verticalVelocity;
+
+        Vector3 moveDelta = moveVelocity * Time.deltaTime;
+        _characterController.Move(moveDelta);
+
+        // プレイヤーの向きを移動方向に合わせる
+        if (moveDirection != Vector3.zero)
+        {
+            Quaternion targetRotation = Quaternion.LookRotation(moveDirection);
+            _transform.rotation = Quaternion.Slerp(_transform.rotation, targetRotation, 0.1f);
+        }
     }
+
 }
