@@ -41,6 +41,7 @@ public class PlayerContoroller : MonoBehaviour
 
     private void Awake()
     {
+        Cursor.lockState = CursorLockMode.Locked; // カーソルをロックする
         _transform = transform;
         _characterController = GetComponent<CharacterController>();
     }
