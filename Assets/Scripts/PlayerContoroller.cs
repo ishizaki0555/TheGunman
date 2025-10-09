@@ -18,6 +18,14 @@ public class PlayerContoroller : MonoBehaviour
     private float _turnVelocity;
     private bool _isGroundedPrev;
 
+    [SerializeField] private Gun _gun;
+
+    public void OnShoot()
+    {
+        _gun.Shoot();
+    }
+
+
     /// <summary>
     /// ˆÚ“®Action(PlayerInput‘¤‚©‚çŒÄ‚Î‚ê‚é)
     /// </summary>
